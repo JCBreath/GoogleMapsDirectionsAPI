@@ -1,7 +1,16 @@
 # GoogleMapsDirectionsAPI
 
 ## Request URL
+#### Simple
 `/maps/dir/locationA/locationB/locationC...`
+#### Google Maps API Formatting
+`https://maps.googleapis.com/maps/api/directions/outputFormat?parameters`
+```
+https://maps.googleapis.com/maps/api/directions/json?
+origin=Boston,MA&destination=Concord,MA
+&waypoints=Charlestown,MA|Lexington,MA
+&key=YOUR_API_KEY
+```
 
 ## Response
 ```js
@@ -31,3 +40,4 @@ Duration: 37 min
 
 ## Reference
 [Directions API - Google Developers](https://developers.google.com/maps/documentation/directions/start)
+[Direction Requests Format](https://developers.google.com/maps/documentation/directions/intro#DirectionsRequests)
