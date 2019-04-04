@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			body {
+				margin: auto;
+				padding: 0;
+			}
+
+			#googleMap {
+				width: 100vw;
+				height: 100vh;
+			}
+		</style>
+		
+	 	<meta name="viewport" content="width=1000, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		
+	</head>
+ 
+	<body>
+		<div id="googleMap">
+			
+		</div>
+		<script>
+			var map, my_marker, my_position, my_heading, marker_icon;
+			var marker_list = [];
+			
+			var key = "AIzaSyDJW4jsPlNKgv6jFm3B5Edp5ywgdqLWdmc";
+
+			function initMap()
+			{
+				//console.log(my_position);
+
+				// Init Map
+				var mapProp = {
+					center: my_position,
+					zoom: 15,
+					mapTypeId: google.maps.MapTypeId.ROADMAP,
+					gestureHandling: 'greedy',
+					disableDefaultUI: true,
+					scaleControl: true
+
+				};
+				map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+				// Init Directions
+				var directionsService = new google.maps.DirectionsService;
+				var DirectionsRendererOptions = {
+					markerOptions:{visible:false}
+				};
+				var directionsDisplay = new google.maps.DirectionsRenderer(DirectionsRendererOptions);
+				directionsDisplay.setMap(map);
+
+				
+
+				marker_icon = {
+					path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+					fillColor: '#1081E0',
+					fillOpacity: 1,
+					anchor: new google.maps.Point(0,0),
+					strokeWeight: 0,
+					scale: 5,
+					rotation: my_heading,
+					labelOrigin: new google.maps.Point(0,6)
+					
+				};
+
+				my_marker = new google.maps.Marker({
+					position: my_position,
+					icon: marker_icon,
+					
+					label: {
+						text: 'My Location',
+						color: "#1081E0",
+						fontSize: "16px",
+						fontWeight: "lighter",
+						outline: "1px"
+					}
+				});
+
+				my_marker.setMap(map);
+
+
+				updateMarkers();
+
+				calculateAndDisplayRoute(directionsService, directionsDisplay);
+				/*
+
+				var infowindow = new google.maps.InfoWindow({
+					content:"ME",
+				});
+
+				infowindow.open(map,marker);
+
+				google.maps.event.addListener(marker, 'click', function() {
+					infowindow.open(map,marker);
+				});
+				
+				*/
+
+				/*
+				var stavanger=new google.maps.LatLng(58.983991,5.734863);
+				var amsterdam=new google.maps.LatLng(52.395715,4.888916);
+				var london=new google.maps.LatLng(51.508742,-0.120850);
+
+				var myTrip = [stavanger,amsterdam,london];
+				var flightPath = new google.maps.Polyline({
+					path: myTrip,
+					strokeColor: "#1688DB",
+					strokeOpacity: 0.8,
+					strokeWeight: 20,
+					editable: true
+				});
+
+				flightPath.setMap(map);
+
+				*/
+				navigator.geolocation.watchPosition(updateMap);
+			}
+
+			function updateMap(data) {
+				my_heading = data.coords.heading;
+				marker_icon.rotation = my_heading;
+			}
+
+
+			function getLocation()
+			{
+				if (navigator.geolocation)
+				{
+					// watchPosition(updateLocation)
+					navigator.geolocation.getCurrentPosition(locationReady);
+				}
+				else
+				{
+					console.log("Location sharing disabled.")
+				}
+			}
+
+			function locationReady(data)
+			{
+				my_position = new google.maps.LatLng(data.coords.latitude, data.coords.longitude);
+				my_heading = data.coords.heading;
+				initMap();
+			}
+
+			function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+				directionsService.route({
+					origin: my_position,
+					waypoints: marker_list,
+					destination: my_position,
+					optimizeWaypoints: true,
+					travelMode: 'DRIVING'
+				}, function(response, status) {
+					if (status === 'OK') {
+						directionsDisplay.setDirections(response);
+					} else {
+						window.alert('Directions request failed due to ' + status);
+					}
+				});
+			}
+
+			function updateMarkers() {
+				marker_list = []
+				
+				for(let i=0;i<4;i++) {
+					let marker = new google.maps.Marker({
+						position: new google.maps.LatLng(my_position.lat() + (i+1)*(Math.random()-.5)/100, my_position.lng() + (i+1)*(Math.random()-.5)/100),
+						label: {
+							text: "P" + i,
+							color: "#FFFFFF",
+							fontSize: "16px",
+							fontWeight: "lighter",
+							outline: "1px"
+						}
+					});
+					marker.setMap(map);
+
+					marker_list.push({location:marker.position, stopover:true});
+				}
+
+				
+			}
+
+		</script>
+		<script async defer
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJW4jsPlNKgv6jFm3B5Edp5ywgdqLWdmc&callback=getLocation">
+		</script>
+	</body>
+</html>
